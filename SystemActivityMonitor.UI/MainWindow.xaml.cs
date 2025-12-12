@@ -2,13 +2,16 @@
 using System.Linq;
 using System.Windows;
 using SystemActivityMonitor.Data;
-using SystemActivityMonitor.Data.Entities;
 using SystemActivityMonitor.Data.Patterns.Iterator;
+using SystemActivityMonitor.Data.Patterns.Command;
 
 namespace SystemActivityMonitor.UI
 {
     public partial class MainWindow : Window
     {
+        private SystemController _controller = new SystemController();
+        private CommandInvoker _invoker = new CommandInvoker();
+
         public MainWindow(string username, string role)
         {
             InitializeComponent();
@@ -23,45 +26,32 @@ namespace SystemActivityMonitor.UI
 
         private void BtnGenerate_Click(object sender, RoutedEventArgs e)
         {
-            using (var db = new MonitorDbContext())
-            {
-                var admin = db.Users.FirstOrDefault(u => u.Username == "admin");
-                if (admin == null) return;
+            ICommand generateCmd = new GenerateDataCommand(_controller);
+            _invoker.SetCommand(generateCmd);
+            _invoker.Run();
 
-                var session = new Session
-                {
-                    UserId = admin.Id,
-                    MachineName = "TEST-PC",
-                    OSVersion = "Windows 11"
-                };
-                db.Sessions.Add(session);
-                db.SaveChanges();
+            MessageBox.Show("Дані згенеровано (через Command)!");
+            BtnLoadIterator_Click(null, null);
+        }
 
-                var rnd = new Random();
-                for (int i = 0; i < 5; i++)
-                {
-                    db.ResourceLogs.Add(new ResourceLog
-                    {
-                        SessionId = session.Id,
-                        CpuLoad = rnd.Next(10, 90),
-                        RamUsage = rnd.Next(2000, 8000),
-                        CreatedAt = DateTime.UtcNow.AddSeconds(i * 10)
-                    });
-                }
-                db.SaveChanges();
-            }
-            MessageBox.Show("Тестові дані успішно згенеровано!");
+        private void BtnClear_Click(object sender, RoutedEventArgs e)
+        {
+            ICommand clearCmd = new ClearDataCommand(_controller);
+            _invoker.SetCommand(clearCmd);
+            _invoker.Run();
+
+            MessageBox.Show("Базу очищено (через Command)!");
+            lstLogs.Items.Clear();
         }
 
         private void BtnLoadIterator_Click(object sender, RoutedEventArgs e)
         {
             lstLogs.Items.Clear();
-
             LogCollection collection = new LogCollection();
 
             using (var db = new MonitorDbContext())
             {
-                var logsFromDb = db.ResourceLogs.OrderByDescending(l => l.CreatedAt).Take(20).ToList();
+                var logsFromDb = db.ResourceLogs.OrderByDescending(l => l.CreatedAt).ToList();
                 foreach (var log in logsFromDb)
                 {
                     collection.Add(log);
@@ -69,15 +59,15 @@ namespace SystemActivityMonitor.UI
             }
 
             IIterator iterator = collection.CreateIterator();
-
             iterator.First();
             while (!iterator.IsDone())
             {
-                ResourceLog item = iterator.CurrentItem();
-
-                string displayText = $"[{item.CreatedAt.ToShortTimeString()}] CPU: {item.CpuLoad}% | RAM: {item.RamUsage} MB";
-                lstLogs.Items.Add(displayText);
-
+                var item = iterator.CurrentItem();
+                if (item != null)
+                {
+                    string displayText = $"[{item.CreatedAt.ToLongTimeString()}] CPU: {item.CpuLoad}% | RAM: {item.RamUsage} MB";
+                    lstLogs.Items.Add(displayText);
+                }
                 iterator.Next();
             }
         }
