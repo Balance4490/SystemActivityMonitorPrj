@@ -1,0 +1,5 @@
+C:\КПІ\Ворк\Vlad\SystemActivityMonitor\SystemActivityMonitor.Data\obj\Debug\net9.0\SystemActivityMonitor.Data.csproj.AssemblyReference.cache
+C:\КПІ\Ворк\Vlad\SystemActivityMonitor\SystemActivityMonitor.Data\obj\Debug\net9.0\SystemActivityMonitor.Data.GeneratedMSBuildEditorConfig.editorconfig
+C:\КПІ\Ворк\Vlad\SystemActivityMonitor\SystemActivityMonitor.Data\obj\Debug\net9.0\SystemActivityMonitor.Data.AssemblyInfoInputs.cache
+C:\КПІ\Ворк\Vlad\SystemActivityMonitor\SystemActivityMonitor.Data\obj\Debug\net9.0\SystemActivityMonitor.Data.AssemblyInfo.cs
+C:\КПІ\Ворк\Vlad\SystemActivityMonitor\SystemActivityMonitor.Data\obj\Debug\net9.0\SystemActivityMonitor.Data.csproj.CoreCompileInputs.cache

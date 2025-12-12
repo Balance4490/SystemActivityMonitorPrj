@@ -1,0 +1,47 @@
+<Window x:Class="SystemActivityMonitor.UI.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="System Monitor - Вхід" 
+        Width="350" 
+        SizeToContent="Height" 
+        WindowStartupLocation="CenterScreen" 
+        ResizeMode="NoResize"
+        Background="#F5F5F5"> <Grid Margin="25">
+        <StackPanel VerticalAlignment="Center">
+            <TextBlock Text="Вхід у систему" 
+                       FontSize="22" 
+                       FontWeight="Bold" 
+                       Foreground="#333333"
+                       HorizontalAlignment="Center" 
+                       Margin="0,0,0,25"/>
+            
+            <TextBlock Text="Логін:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+            <TextBox x:Name="txtUsername" Height="30" Padding="5,2" Margin="0,0,0,15"/>
+            
+            <TextBlock Text="Пароль:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+            <PasswordBox x:Name="txtPassword" Height="30" Padding="5,2" Margin="0,0,0,25"/>
+            
+            <Button Content="Увійти" 
+                    Height="40" 
+                    Click="BtnLogin_Click" 
+                    Background="#007ACC" 
+                    Foreground="White" 
+                    FontWeight="Bold"
+                    BorderThickness="0"
+                    Cursor="Hand"/>
+            
+            <TextBlock HorizontalAlignment="Center" Margin="0,20,0,0">
+                <Hyperlink Click="BtnGoToRegister_Click" Foreground="#007ACC" TextDecorations="None">
+                    Немає акаунту? <Run FontWeight="Bold">Зареєструватися</Run>
+                </Hyperlink>
+            </TextBlock>
+            
+            <TextBlock x:Name="lblStatus" 
+                       Text="" 
+                       Foreground="#D8000C" 
+                       FontWeight="Bold"
+                       HorizontalAlignment="Center" 
+                       Margin="0,15,0,0"/>
+        </StackPanel>
+    </Grid>
+</Window>
