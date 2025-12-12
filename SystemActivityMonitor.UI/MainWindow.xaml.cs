@@ -4,6 +4,8 @@ using System.Windows;
 using SystemActivityMonitor.Data;
 using SystemActivityMonitor.Data.Patterns.Iterator;
 using SystemActivityMonitor.Data.Patterns.Command;
+using SystemActivityMonitor.Data.Patterns.AbstractFactory;
+using System.Windows.Controls;
 
 namespace SystemActivityMonitor.UI
 {
@@ -26,11 +28,19 @@ namespace SystemActivityMonitor.UI
 
         private void BtnGenerate_Click(object sender, RoutedEventArgs e)
         {
-            ICommand generateCmd = new GenerateDataCommand(_controller);
+            IMonitorFactory selectedFactory;
+
+            if (cmbFactoryMode.SelectedIndex == 0)
+                selectedFactory = new StandardFactory();
+            else
+                selectedFactory = new CriticalFactory();
+
+            ICommand generateCmd = new GenerateDataCommand(_controller, selectedFactory);
+
             _invoker.SetCommand(generateCmd);
             _invoker.Run();
 
-            MessageBox.Show("Дані згенеровано (через Command)!");
+            MessageBox.Show($"Дані згенеровано! Режим: {((ComboBoxItem)cmbFactoryMode.SelectedItem).Content}");
             BtnLoadIterator_Click(null, null);
         }
 
