@@ -5,13 +5,13 @@ namespace SystemActivityMonitor.Data.Patterns.Bridge
 {
     public abstract class ReportAbstraction
     {
-        protected IReportRenderer _renderer; 
+        protected IReportRenderer _renderer;
 
         public ReportAbstraction(IReportRenderer renderer)
         {
             _renderer = renderer;
         }
 
-        public abstract string Generate(List<ResourceLog> logs);
+        public abstract string Generate(List<ResourceLog> logs, string summary = "");
     }
 }

@@ -9,10 +9,9 @@ namespace SystemActivityMonitor.Data.Patterns.Bridge
         {
         }
 
-        public override string Generate(List<ResourceLog> logs)
+        public override string Generate(List<ResourceLog> logs, string summary = "")
         {
-
-            return _renderer.RenderReport("Щоденний Звіт Системи", logs);
+            return _renderer.RenderReport("Щоденний Звіт Системи", logs, summary);
         }
     }
 }

@@ -10,6 +10,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0">
@@ -49,6 +50,20 @@
 
             <Button Content="Експорт звіту" Width="120" Height="30" Margin="0,0,10,0"
                     Click="BtnBridgeReport_Click" Background="#28a745" Foreground="White" FontWeight="Bold"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Separator Margin="0,10" Width="120"/>
+
+            <TextBlock Text="Visitor:" FontSize="10" Foreground="Gray" HorizontalAlignment="Right" Margin="0,0,20,0"/>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,10,0">
+                <Button Content="XML (Visitor)" Width="100" Height="30" Margin="0,0,5,0"
+                        Click="BtnVisitorXml_Click" Background="#FF5722" Foreground="White" FontWeight="Bold"/>
+
+                <Button Content="Аналіз (Visitor)" Width="100" Height="30"
+                        Click="BtnVisitorStats_Click" Background="#607D8B" Foreground="White" FontWeight="Bold"/>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Window>

@@ -9,6 +9,7 @@ using SystemActivityMonitor.Data.Patterns.Bridge;
 using System.Windows.Controls;
 using System.Collections.Generic;
 using SystemActivityMonitor.Data.Entities;
+using SystemActivityMonitor.Data.Patterns.Visitor;
 
 namespace SystemActivityMonitor.UI
 {
@@ -88,32 +89,74 @@ namespace SystemActivityMonitor.UI
         private void BtnBridgeReport_Click(object sender, RoutedEventArgs e)
         {
             List<ResourceLog> logs;
-
             using (var db = new MonitorDbContext())
             {
                 logs = db.ResourceLogs.OrderByDescending(l => l.CreatedAt).Take(10).ToList();
             }
 
-            if (logs.Count == 0)
+            var elements = new List<IMetricElement>();
+            foreach (var log in logs)
             {
-                MessageBox.Show("Немає даних для звіту! Спочатку згенеруйте їх.");
-                return;
+                elements.Add(new CpuMetric(log.CpuLoad, log.CreatedAt.ToShortTimeString()));
+                elements.Add(new RamMetric(log.RamUsage));
             }
 
-            if (cmbReportFormat.SelectedItem == null)
-            {
-                MessageBox.Show("Будь ласка, виберіть формат звіту.");
-                return;
-            }
+            var analyzer = new AnalysisVisitor();
+            foreach (var el in elements) el.Accept(analyzer);
+
+            string analyticsResult = analyzer.GetStats();
 
             IReportRenderer renderer = cmbReportFormat.SelectedIndex == 0
                 ? new PlainTextRenderer()
                 : new HtmlRenderer();
 
             ReportAbstraction report = new DailyReport(renderer);
-            string result = report.Generate(logs);
+            string finalOutput = report.Generate(logs, analyticsResult);
 
-            MessageBox.Show(result, "Попередній перегляд звіту");
+            MessageBox.Show(finalOutput, "Повний інтегрований звіт");
+        }
+
+        private void BtnVisitorXml_Click(object sender, RoutedEventArgs e)
+        {
+            var structure = PrepareElements();
+            var visitor = new XmlExportVisitor();
+
+            foreach (var element in structure)
+            {
+                element.Accept(visitor);
+            }
+
+            MessageBox.Show(visitor.GetXml(), "Результат Visitor (XML)");
+        }
+
+        private void BtnVisitorStats_Click(object sender, RoutedEventArgs e)
+        {
+            var structure = PrepareElements();
+            var visitor = new AnalysisVisitor();
+
+            foreach (var element in structure)
+            {
+                element.Accept(visitor);
+            }
+
+            MessageBox.Show(visitor.GetStats(), "Результат Visitor (Stats)");
+        }
+
+        private List<IMetricElement> PrepareElements()
+        {
+            var elements = new List<IMetricElement>();
+
+            using (var db = new MonitorDbContext())
+            {
+                var logs = db.ResourceLogs.OrderByDescending(l => l.CreatedAt).Take(10).ToList();
+
+                foreach (var log in logs)
+                {
+                    elements.Add(new CpuMetric(log.CpuLoad, log.CreatedAt.ToShortTimeString()));
+                    elements.Add(new RamMetric(log.RamUsage));
+                }
+            }
+            return elements;
         }
     }
 }
