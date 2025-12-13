@@ -10,6 +10,7 @@ namespace SystemActivityMonitor.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Session> Sessions { get; set; }
         public DbSet<ResourceLog> ResourceLogs { get; set; }
+        public DbSet<InputEvent> InputEvents { get; set; }
 
         private readonly string _dbPath = "system_monitor.db";
 
