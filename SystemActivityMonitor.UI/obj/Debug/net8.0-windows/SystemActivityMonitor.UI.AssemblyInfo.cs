@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SystemActivityMonitor.UI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+22915837ee31f925ea46698d2351a68cf5d6fc37")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+611e7b33ab6d895b0378f260a6977aebef389275")]
 [assembly: System.Reflection.AssemblyProductAttribute("SystemActivityMonitor.UI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SystemActivityMonitor.UI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

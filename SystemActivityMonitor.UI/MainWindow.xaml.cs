@@ -6,6 +6,7 @@ using System.Windows.Threading;
 using SystemActivityMonitor.Data.Patterns.Command;
 using SystemActivityMonitor.Data.Patterns.Observer;
 using SystemActivityMonitor.Data.Processes;
+using SystemActivityMonitor.Data.Patterns.Visitor;
 
 namespace SystemActivityMonitor.UI
 {
@@ -122,6 +123,13 @@ namespace SystemActivityMonitor.UI
                 _invoker.SetCommand(cmd);
                 _invoker.Run();
             }
+        }
+
+        private void BtnRunAnalysis_Click(object sender, RoutedEventArgs e)
+        {
+            var visitor = new ResourceAnalysisVisitor();
+            _controller.ApplyVisitor(visitor);
+            MessageBox.Show(visitor.GetReport(), "Глибокий аналіз системи");
         }
     }
 }

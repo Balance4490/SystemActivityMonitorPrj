@@ -5,6 +5,7 @@ using SystemActivityMonitor.Data.Entities;
 using SystemActivityMonitor.Data.Patterns.AbstractFactory;
 using SystemActivityMonitor.Data.Patterns.Observer;
 using SystemActivityMonitor.Data.Processes;
+using SystemActivityMonitor.Data.Patterns.Visitor;
 
 namespace SystemActivityMonitor.Data.Patterns.Command
 {
@@ -132,6 +133,15 @@ namespace SystemActivityMonitor.Data.Patterns.Command
 
         public void GenerateDataWithFactory(IMonitorFactory factory)
         {
+        }
+
+        public void ApplyVisitor(IProcessVisitor visitor)
+        {
+            var currentProcesses = _activeProcesses.ToList();
+            foreach (var process in currentProcesses)
+            {
+                process.Accept(visitor);
+            }
         }
     }
 }

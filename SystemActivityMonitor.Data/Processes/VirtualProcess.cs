@@ -1,4 +1,5 @@
 using System;
+using SystemActivityMonitor.Data.Patterns.Visitor;
 
 namespace SystemActivityMonitor.Data.Processes
 {
@@ -6,17 +7,17 @@ namespace SystemActivityMonitor.Data.Processes
     {
         public Guid Id { get; private set; } = Guid.NewGuid();
         public string Name { get; set; }
-        public int BaseCpuCost { get; set; } 
+        public int BaseCpuCost { get; set; }
         public int RamCostMb { get; set; }
-        
-        private IProcessState _state; 
+
+        private IProcessState _state;
 
         public VirtualProcess(string name, int baseCpu, int ram)
         {
             Name = name;
             BaseCpuCost = baseCpu;
             RamCostMb = ram;
-            _state = new RunningState(); 
+            _state = new RunningState();
         }
 
         public void SetState(IProcessState state)
@@ -38,6 +39,11 @@ namespace SystemActivityMonitor.Data.Processes
         {
             if (_state is TerminatedState) return 0;
             return RamCostMb;
+        }
+
+        public void Accept(IProcessVisitor visitor)
+        {
+            visitor.Visit(this);
         }
     }
 }

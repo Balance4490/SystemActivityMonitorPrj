@@ -56,8 +56,9 @@
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button Content="Запустити Chrome" Click="BtnStartChrome_Click" Width="130" Margin="5"/>
                     <Button Content="Запустити VS" Click="BtnStartVS_Click" Width="130" Margin="5"/>
-                    <Button Content="Зняти задачу" Click="BtnKillProcess_Click" Background="#d9534f" Foreground="White" Width="130" Margin="5"/>
                 </StackPanel>
+
+                <Button Content="Аналіз ресурсів (Visitor)" Click="BtnRunAnalysis_Click" Width="180" Margin="5"/>
             </StackPanel>
 
             <StackPanel x:Name="AdminPanel" Orientation="Vertical" Visibility="Collapsed">
