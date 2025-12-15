@@ -87,7 +87,19 @@ namespace SystemActivityMonitor.UI
 
             var cmd = new KillProcessCommand(_controller, selected.Id);
             _invoker.SetCommand(cmd);
-            _invoker.Run();
+
+            try
+            {
+                _invoker.Run();
+            }
+            catch (InvalidOperationException ex)
+            {
+                MessageBox.Show(ex.Message, "Системна помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Не вдалося завершити процес: " + ex.Message);
+            }
         }
 
         private void BtnFreezeProcess_Click(object sender, RoutedEventArgs e)
@@ -121,7 +133,19 @@ namespace SystemActivityMonitor.UI
             {
                 var cmd = new KillProcessCommand(_controller, processId);
                 _invoker.SetCommand(cmd);
-                _invoker.Run();
+
+                try
+                {
+                    _invoker.Run();
+                }
+                catch (InvalidOperationException ex)
+                {
+                    MessageBox.Show(ex.Message, "Системна помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Не вдалося завершити процес: " + ex.Message);
+                }
             }
         }
 

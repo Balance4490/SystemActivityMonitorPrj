@@ -13,9 +13,21 @@ namespace SystemActivityMonitor.Data.Patterns.Command
     {
         private List<VirtualProcess> _activeProcesses = new List<VirtualProcess>();
         private List<IObserver> _observers = new List<IObserver>();
+        private readonly string[] _protectedProcesses = { "System", "Registry", "Antimalware Service" };
 
         public float CurrentTotalCpu { get; private set; }
         public float CurrentTotalRam { get; private set; }
+
+        public SystemController()
+        {
+            _activeProcesses = new List<VirtualProcess>();
+
+            _activeProcesses.Add(new VirtualProcess("System", 1, 150));
+            _activeProcesses.Add(new VirtualProcess("Registry", 0, 50));
+            _activeProcesses.Add(new VirtualProcess("Antimalware Service", 2, 200));
+
+            RecalculateLoad();
+        }
 
         public void Attach(IObserver observer)
         {
@@ -47,8 +59,14 @@ namespace SystemActivityMonitor.Data.Patterns.Command
         public void KillProcess(Guid processId)
         {
             var process = _activeProcesses.FirstOrDefault(p => p.Id == processId);
+
             if (process != null)
             {
+                if (_protectedProcesses.Contains(process.Name))
+                {
+                    throw new InvalidOperationException($"Доступ заборонено! Процес '{process.Name}' є критичним для системи.");
+                }
+
                 process.SetState(new TerminatedState());
                 _activeProcesses.Remove(process);
 
