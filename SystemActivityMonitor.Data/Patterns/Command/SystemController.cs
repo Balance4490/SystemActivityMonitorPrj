@@ -90,27 +90,45 @@ namespace SystemActivityMonitor.Data.Patterns.Command
 
             try
             {
-                using (var db = new MonitorDbContext())
+                if (_activeProcesses.Count > 0)
                 {
-                    var session = db.Sessions.OrderByDescending(s => s.CreatedAt).FirstOrDefault();
-                    if (session != null)
+                    using (var db = new MonitorDbContext())
                     {
-                        db.ResourceLogs.Add(new ResourceLog
+                        var session = db.Sessions.OrderByDescending(s => s.CreatedAt).FirstOrDefault();
+
+                        if (session != null)
                         {
-                            SessionId = session.Id,
-                            CpuLoad = CurrentTotalCpu,
-                            RamUsage = CurrentTotalRam,
-                            ActiveWindow = _activeProcesses.Count > 0 ? _activeProcesses.Last().Name : "Desktop",
-                            CreatedAt = DateTime.UtcNow,
-                            IsSystemIdle = _activeProcesses.Count == 0
-                        });
-                        db.SaveChanges();
+                            db.ResourceLogs.Add(new ResourceLog
+                            {
+                                SessionId = session.Id,
+                                CpuLoad = CurrentTotalCpu,
+                                RamUsage = CurrentTotalRam,
+                                ActiveWindow = _activeProcesses.Last().Name,
+                                CreatedAt = DateTime.UtcNow,
+                                IsSystemIdle = false
+                            });
+
+                            var rnd = new Random();
+                            if (rnd.Next(0, 10) < 3)
+                            {
+                                bool isMouse = rnd.Next(0, 2) == 0;
+                                db.InputEvents.Add(new InputEvent
+                                {
+                                    SessionId = session.Id,
+                                    EventType = isMouse ? "Mouse" : "Keyboard",
+                                    Details = isMouse ? "Click" : "Key Press",
+                                    CreatedAt = DateTime.UtcNow
+                                });
+                            }
+
+                            db.SaveChanges();
+                        }
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                // Ігноруємо помилки БД
+                System.Diagnostics.Debug.WriteLine("Помилка БД: " + ex.Message);
             }
         }
 

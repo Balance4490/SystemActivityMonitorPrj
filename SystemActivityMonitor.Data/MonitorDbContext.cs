@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 
 namespace SystemActivityMonitor.Data
-{
+{   
     public class MonitorDbContext : DbContext
     {
         public DbSet<User> Users { get; set; }

@@ -1,6 +1,8 @@
 using System.Linq;
+using System;
 using System.Windows;
 using SystemActivityMonitor.Data;
+using SystemActivityMonitor.Data.Entities;
 
 namespace SystemActivityMonitor.UI
 {
@@ -35,8 +37,19 @@ namespace SystemActivityMonitor.UI
 
                 if (user != null)
                 {
+                    var newSession = new Session
+                    {
+                        Id = Guid.NewGuid(),
+                        UserId = user.Id,
+                        CreatedAt = DateTime.UtcNow
+                    };
+
+                    db.Sessions.Add(newSession);
+                    db.SaveChanges();
+
                     MainWindow main = new MainWindow(user.Username, user.Role);
                     main.Show();
+
                     this.Close();
                 }
                 else
