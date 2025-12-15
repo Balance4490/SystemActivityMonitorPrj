@@ -2551,11 +2551,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\КПІ\\Ворк\\Vlad\\SystemActivityMonitor\\SystemActivityMonitor.UI\\SystemActivityMonitor.UI.csproj",
+      "projectUniqueName": "C:\\КПІ\\Ворк\\Vlad\\SystemActivityMonitorPrj\\systemactivitymonitor\\SystemActivityMonitor.UI\\SystemActivityMonitor.UI.csproj",
       "projectName": "SystemActivityMonitor.UI",
-      "projectPath": "C:\\КПІ\\Ворк\\Vlad\\SystemActivityMonitor\\SystemActivityMonitor.UI\\SystemActivityMonitor.UI.csproj",
+      "projectPath": "C:\\КПІ\\Ворк\\Vlad\\SystemActivityMonitorPrj\\systemactivitymonitor\\SystemActivityMonitor.UI\\SystemActivityMonitor.UI.csproj",
       "packagesPath": "C:\\Users\\38093\\.nuget\\packages\\",
-      "outputPath": "C:\\КПІ\\Ворк\\Vlad\\SystemActivityMonitor\\SystemActivityMonitor.UI\\obj\\",
+      "outputPath": "C:\\КПІ\\Ворк\\Vlad\\SystemActivityMonitorPrj\\systemactivitymonitor\\SystemActivityMonitor.UI\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\38093\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -2570,8 +2570,8 @@
         "net8.0-windows7.0": {
           "targetAlias": "net8.0-windows",
           "projectReferences": {
-            "C:\\КПІ\\Ворк\\Vlad\\SystemActivityMonitor\\SystemActivityMonitor.Data\\SystemActivityMonitor.Data.csproj": {
-              "projectPath": "C:\\КПІ\\Ворк\\Vlad\\SystemActivityMonitor\\SystemActivityMonitor.Data\\SystemActivityMonitor.Data.csproj"
+            "C:\\КПІ\\Ворк\\Vlad\\SystemActivityMonitorPrj\\systemactivitymonitor\\SystemActivityMonitor.Data\\SystemActivityMonitor.Data.csproj": {
+              "projectPath": "C:\\КПІ\\Ворк\\Vlad\\SystemActivityMonitorPrj\\systemactivitymonitor\\SystemActivityMonitor.Data\\SystemActivityMonitor.Data.csproj"
             }
           }
         }

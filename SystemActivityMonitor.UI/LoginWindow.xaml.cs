@@ -35,17 +35,8 @@ namespace SystemActivityMonitor.UI
 
                 if (user != null)
                 {
-                    if (user.Role == "Admin")
-                    {
-                        MainWindow adminScreen = new MainWindow(user.Username, user.Role);
-                        adminScreen.Show();
-                    }
-                    else
-                    {
-                        UserWindow userScreen = new UserWindow(user.Username);
-                        userScreen.Show();
-                    }
-
+                    MainWindow main = new MainWindow(user.Username, user.Role);
+                    main.Show();
                     this.Close();
                 }
                 else

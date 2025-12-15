@@ -1,12 +1,122 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using SystemActivityMonitor.Data.Entities;
 using SystemActivityMonitor.Data.Patterns.AbstractFactory;
+using SystemActivityMonitor.Data.Patterns.Observer;
+using SystemActivityMonitor.Data.Processes;
 
 namespace SystemActivityMonitor.Data.Patterns.Command
 {
-    public class SystemController
+    public class SystemController : ISubject
     {
+        private List<VirtualProcess> _activeProcesses = new List<VirtualProcess>();
+        private List<IObserver> _observers = new List<IObserver>();
+
+        public float CurrentTotalCpu { get; private set; }
+        public float CurrentTotalRam { get; private set; }
+
+        public void Attach(IObserver observer)
+        {
+            _observers.Add(observer);
+        }
+
+        public void Detach(IObserver observer)
+        {
+            _observers.Remove(observer);
+        }
+
+        public void Notify()
+        {
+            foreach (var observer in _observers)
+            {
+                observer.Update(CurrentTotalCpu, CurrentTotalRam, _activeProcesses);
+            }
+        }
+
+        public void StartProcess(string name, int baseCpu, int ramMb)
+        {
+            var process = new VirtualProcess(name, baseCpu, ramMb);
+            _activeProcesses.Add(process);
+
+            RecalculateLoad();
+            Notify();
+        }
+
+        public void KillProcess(Guid processId)
+        {
+            var process = _activeProcesses.FirstOrDefault(p => p.Id == processId);
+            if (process != null)
+            {
+                process.SetState(new TerminatedState());
+                _activeProcesses.Remove(process);
+
+                RecalculateLoad();
+                Notify();
+            }
+        }
+
+        public void SetProcessState(Guid processId, IProcessState newState)
+        {
+            var process = _activeProcesses.FirstOrDefault(p => p.Id == processId);
+            if (process != null)
+            {
+                process.SetState(newState);
+                RecalculateLoad();
+                Notify();
+            }
+        }
+
+        public void UpdateSystemState()
+        {
+            RecalculateLoad();
+            Notify();
+        }
+
+        private void RecalculateLoad()
+        {
+            float cpuSum = 0;
+            float ramSum = 0;
+
+            foreach (var proc in _activeProcesses)
+            {
+                cpuSum += proc.GetCurrentCpuUsage();
+                ramSum += proc.GetCurrentRamUsage();
+            }
+
+            CurrentTotalCpu = Math.Min(100.0f, cpuSum);
+            CurrentTotalRam = ramSum;
+
+            try
+            {
+                using (var db = new MonitorDbContext())
+                {
+                    var session = db.Sessions.OrderByDescending(s => s.CreatedAt).FirstOrDefault();
+                    if (session != null)
+                    {
+                        db.ResourceLogs.Add(new ResourceLog
+                        {
+                            SessionId = session.Id,
+                            CpuLoad = CurrentTotalCpu,
+                            RamUsage = CurrentTotalRam,
+                            ActiveWindow = _activeProcesses.Count > 0 ? _activeProcesses.Last().Name : "Desktop",
+                            CreatedAt = DateTime.UtcNow,
+                            IsSystemIdle = _activeProcesses.Count == 0
+                        });
+                        db.SaveChanges();
+                    }
+                }
+            }
+            catch
+            {
+                // Ігноруємо помилки БД
+            }
+        }
+
+        public void GenerateTestData()
+        {
+        }
+
         public void ClearAllData()
         {
             using (var db = new MonitorDbContext())
@@ -15,62 +125,13 @@ namespace SystemActivityMonitor.Data.Patterns.Command
                 db.Sessions.RemoveRange(db.Sessions);
                 db.SaveChanges();
             }
+            _activeProcesses.Clear();
+            RecalculateLoad();
+            Notify();
         }
 
         public void GenerateDataWithFactory(IMonitorFactory factory)
         {
-            ICpuSensor cpuSensor = factory.CreateCpuSensor();
-            IRamSensor ramSensor = factory.CreateRamSensor();
-
-            using (var db = new MonitorDbContext())
-            {
-                var admin = db.Users.FirstOrDefault(u => u.Username == "admin");
-                if (admin == null) return;
-
-                var session = new Session
-                {
-                    UserId = admin.Id,
-                    MachineName = "FULL-PC",
-                    OSVersion = "Windows 11 Pro"
-                };
-                db.Sessions.Add(session);
-                db.SaveChanges();
-
-                var rnd = new Random();
-                string[] windows = { "Google Chrome", "Visual Studio", "Google Chrome", "Telegram", "Word" };
-
-                for (int i = 0; i < 10; i++)
-                {
-                    db.ResourceLogs.Add(new ResourceLog
-                    {
-                        SessionId = session.Id,
-                        CpuLoad = cpuSensor.GetCpuLoad(),
-                        RamUsage = ramSensor.GetFreeRam(),
-                        ActiveWindow = windows[rnd.Next(windows.Length)],
-                        CreatedAt = DateTime.UtcNow.AddSeconds(i * 2)
-                    });
-                }
-
-                string[] keyActions = { "Ctrl+C", "Ctrl+V", "Enter", "Alt+Tab", "Space" };
-                string[] mouseActions = { "Left Click", "Right Click", "Scroll Down", "Double Click" };
-
-                for (int i = 0; i < 5; i++)
-                {
-                    bool isKeyboard = rnd.Next(0, 2) == 0;
-
-                    db.InputEvents.Add(new InputEvent
-                    {
-                        SessionId = session.Id,
-                        EventType = isKeyboard ? "Keyboard" : "Mouse",
-                        Details = isKeyboard
-                            ? keyActions[rnd.Next(keyActions.Length)]
-                            : mouseActions[rnd.Next(mouseActions.Length)],
-                        CreatedAt = DateTime.UtcNow.AddSeconds(i * 3)
-                    });
-                }
-
-                db.SaveChanges();
-            }
         }
     }
 }

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "XoQNh2+KRDU=",
+  "dgSpecHash": "T7Utudsg8mw=",
   "success": true,
-  "projectFilePath": "C:\\КПІ\\Ворк\\Vlad\\SystemActivityMonitor\\SystemActivityMonitor.UI\\SystemActivityMonitor.UI.csproj",
+  "projectFilePath": "C:\\КПІ\\Ворк\\Vlad\\SystemActivityMonitorPrj\\systemactivitymonitor\\SystemActivityMonitor.UI\\SystemActivityMonitor.UI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\38093\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\38093\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\6.0.0\\microsoft.bcl.asyncinterfaces.6.0.0.nupkg.sha512",

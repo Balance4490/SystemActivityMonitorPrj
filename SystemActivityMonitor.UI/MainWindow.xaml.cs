@@ -1,162 +1,127 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using SystemActivityMonitor.Data;
-using SystemActivityMonitor.Data.Patterns.Iterator;
+using System.Windows.Threading;
 using SystemActivityMonitor.Data.Patterns.Command;
-using SystemActivityMonitor.Data.Patterns.AbstractFactory;
-using SystemActivityMonitor.Data.Patterns.Bridge;
-using System.Windows.Controls;
-using System.Collections.Generic;
-using SystemActivityMonitor.Data.Entities;
-using SystemActivityMonitor.Data.Patterns.Visitor;
+using SystemActivityMonitor.Data.Patterns.Observer;
+using SystemActivityMonitor.Data.Processes;
 
 namespace SystemActivityMonitor.UI
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, IObserver
     {
         private SystemController _controller = new SystemController();
         private CommandInvoker _invoker = new CommandInvoker();
+        private DispatcherTimer _timer;
 
         public MainWindow(string username, string role)
         {
             InitializeComponent();
-            txtWelcome.Text = $"Вітаємо, {username}!";
-            txtRole.Text = $"Рівень доступу: {role}";
-        }
+            this.Title = $"System Activity Monitor | Logged in as: {username} ({role})";
 
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
-
-        private void BtnGenerate_Click(object sender, RoutedEventArgs e)
-        {
-            IMonitorFactory selectedFactory;
-
-            if (cmbFactoryMode.SelectedIndex == 0)
-                selectedFactory = new StandardFactory();
+            if (role == "Admin")
+            {
+                AdminPanel.Visibility = Visibility.Visible;
+                UserPanel.Visibility = Visibility.Collapsed;
+            }
             else
-                selectedFactory = new CriticalFactory();
+            {
+                UserPanel.Visibility = Visibility.Visible;
+                AdminPanel.Visibility = Visibility.Collapsed;
+            }
 
-            ICommand generateCmd = new GenerateDataCommand(_controller, selectedFactory);
+            _controller.Attach(this);
 
-            _invoker.SetCommand(generateCmd);
+            _timer = new DispatcherTimer();
+            _timer.Interval = TimeSpan.FromSeconds(1);
+            _timer.Tick += (s, e) => _controller.UpdateSystemState();
+            _timer.Start();
+        }
+
+        public void Update(float totalCpu, float totalRam, List<VirtualProcess> processes)
+        {
+            var viewList = processes.Select(p => new
+            {
+                Id = p.Id,
+                Name = p.Name,
+                StatusName = p.GetStatus(),
+                CurrentCpu = $"{p.GetCurrentCpuUsage():F1}%",
+                CurrentRam = $"{p.GetCurrentRamUsage()} MB"
+            }).ToList();
+
+            lstProcesses.ItemsSource = viewList;
+
+            lblTotalCpu.Text = $"{totalCpu:F1}%";
+            lblTotalRam.Text = $"{totalRam} MB";
+
+            if (totalCpu > 80)
+                lblStatus.Text = "CRITICAL LOAD!";
+            else
+                lblStatus.Text = "Normal operation";
+        }
+
+        private void BtnStartChrome_Click(object sender, RoutedEventArgs e)
+        {
+            var cmd = new StartProcessCommand(_controller, "Google Chrome", 5, 200);
+            _invoker.SetCommand(cmd);
             _invoker.Run();
-
-            MessageBox.Show($"Дані згенеровано! Режим: {((ComboBoxItem)cmbFactoryMode.SelectedItem).Content}");
-            BtnLoadIterator_Click(null, null);
         }
 
-        private void BtnClear_Click(object sender, RoutedEventArgs e)
+        private void BtnStartVS_Click(object sender, RoutedEventArgs e)
         {
-            ICommand clearCmd = new ClearDataCommand(_controller);
-            _invoker.SetCommand(clearCmd);
+            var cmd = new StartProcessCommand(_controller, "Visual Studio", 30, 1500);
+            _invoker.SetCommand(cmd);
             _invoker.Run();
-
-            MessageBox.Show("Базу очищено (через Command)!");
-            lstLogs.Items.Clear();
         }
 
-        private void BtnLoadIterator_Click(object sender, RoutedEventArgs e)
+        private void BtnKillProcess_Click(object sender, RoutedEventArgs e)
         {
-            lstLogs.Items.Clear();
-            LogCollection collection = new LogCollection();
-
-            using (var db = new MonitorDbContext())
+            dynamic selected = lstProcesses.SelectedItem;
+            if (selected == null)
             {
-                var logsFromDb = db.ResourceLogs.OrderByDescending(l => l.CreatedAt).ToList();
-                foreach (var log in logsFromDb)
-                {
-                    collection.Add(log);
-                }
+                MessageBox.Show("Виберіть процес зі списку!");
+                return;
             }
 
-            IIterator iterator = collection.CreateIterator();
-            iterator.First();
-            while (!iterator.IsDone())
+            var cmd = new KillProcessCommand(_controller, selected.Id);
+            _invoker.SetCommand(cmd);
+            _invoker.Run();
+        }
+
+        private void BtnFreezeProcess_Click(object sender, RoutedEventArgs e)
+        {
+            dynamic selected = lstProcesses.SelectedItem;
+            if (selected == null) return;
+
+            _controller.SetProcessState(selected.Id, new NotRespondingState());
+        }
+
+        private void BtnShowHistory_Click(object sender, RoutedEventArgs e)
+        {
+            UserWindow history = new UserWindow("System Archive");
+            history.Show();
+        }
+
+        private void BtnClearDb_Click(object sender, RoutedEventArgs e)
+        {
+            var result = MessageBox.Show("Ви впевнені, що хочете очистити всю базу даних?", "Підтвердження", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (result == MessageBoxResult.Yes)
             {
-                var item = iterator.CurrentItem();
-                if (item != null)
-                {
-                    string displayText = $"[{item.CreatedAt.ToLongTimeString()}] CPU: {item.CpuLoad}% | RAM: {item.RamUsage} MB";
-                    lstLogs.Items.Add(displayText);
-                }
-                iterator.Next();
+                _controller.ClearAllData();
+                MessageBox.Show("Базу даних очищено!");
             }
         }
 
-        private void BtnBridgeReport_Click(object sender, RoutedEventArgs e)
+        private void BtnKillRow_Click(object sender, RoutedEventArgs e)
         {
-            List<ResourceLog> logs;
-            using (var db = new MonitorDbContext())
+            var button = (System.Windows.Controls.Button)sender;
+            if (button.Tag is Guid processId)
             {
-                logs = db.ResourceLogs.OrderByDescending(l => l.CreatedAt).Take(10).ToList();
+                var cmd = new KillProcessCommand(_controller, processId);
+                _invoker.SetCommand(cmd);
+                _invoker.Run();
             }
-
-            var elements = new List<IMetricElement>();
-            foreach (var log in logs)
-            {
-                elements.Add(new CpuMetric(log.CpuLoad, log.CreatedAt.ToShortTimeString(), log.ActiveWindow, log.IsSystemIdle));
-                elements.Add(new RamMetric(log.RamUsage));
-            }
-
-            var analyzer = new AnalysisVisitor();
-            foreach (var el in elements) el.Accept(analyzer);
-
-            string analyticsResult = analyzer.GetStats();
-
-            IReportRenderer renderer = cmbReportFormat.SelectedIndex == 0
-                ? new PlainTextRenderer()
-                : new HtmlRenderer();
-
-            ReportAbstraction report = new DailyReport(renderer);
-            string finalOutput = report.Generate(logs, analyticsResult);
-
-            MessageBox.Show(finalOutput, "Повний інтегрований звіт");
-        }
-
-        private void BtnVisitorXml_Click(object sender, RoutedEventArgs e)
-        {
-            var structure = PrepareElements();
-            var visitor = new XmlExportVisitor();
-
-            foreach (var element in structure)
-            {
-                element.Accept(visitor);
-            }
-
-            MessageBox.Show(visitor.GetXml(), "Результат Visitor (XML)");
-        }
-
-        private void BtnVisitorStats_Click(object sender, RoutedEventArgs e)
-        {
-            var structure = PrepareElements();
-            var visitor = new AnalysisVisitor();
-
-            foreach (var element in structure)
-            {
-                element.Accept(visitor);
-            }
-
-            MessageBox.Show(visitor.GetStats(), "Результат Visitor (Stats)");
-        }
-
-        private List<IMetricElement> PrepareElements()
-        {
-            var elements = new List<IMetricElement>();
-
-            using (var db = new MonitorDbContext())
-            {
-                var logs = db.ResourceLogs.OrderByDescending(l => l.CreatedAt).Take(10).ToList();
-
-                foreach (var log in logs)
-                {
-                    elements.Add(new CpuMetric(log.CpuLoad, log.CreatedAt.ToShortTimeString(), log.ActiveWindow, log.IsSystemIdle));
-                    elements.Add(new RamMetric(log.RamUsage));
-                }
-            }
-            return elements;
         }
     }
 }
