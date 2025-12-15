@@ -179,5 +179,10 @@ namespace SystemActivityMonitor.Data.Patterns.Command
                 process.Accept(visitor);
             }
         }
+
+        public List<VirtualProcess> GetProcesses()
+        {
+            return _activeProcesses;
+        }
     }
 }

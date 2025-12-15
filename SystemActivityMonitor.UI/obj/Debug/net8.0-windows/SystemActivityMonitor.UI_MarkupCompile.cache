@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
 C:\КПІ\Ворк\Vlad\SystemActivityMonitorPrj\systemactivitymonitor\SystemActivityMonitor.UI\App.xaml
-4-1349732209
+61297396609
 
-6260023177
+8729961613
 2312042820493
-LoginWindow.xaml;MainWindow.xaml;RegisterWindow.xaml;UserWindow.xaml;
+AppWindow.xaml;DesktopWindow.xaml;LoginWindow.xaml;MainWindow.xaml;RegisterWindow.xaml;UserWindow.xaml;
 
 False
 

@@ -266,3 +266,7 @@ C:\КПІ\Ворк\Vlad\SystemActivityMonitorPrj\systemactivitymonitor\SystemAct
 C:\КПІ\Ворк\Vlad\SystemActivityMonitorPrj\systemactivitymonitor\SystemActivityMonitor.UI\obj\Debug\net8.0-windows\SystemActivityMonitor.UI.pdb
 C:\КПІ\Ворк\Vlad\SystemActivityMonitorPrj\systemactivitymonitor\SystemActivityMonitor.UI\obj\Debug\net8.0-windows\SystemActivityMonitor.UI.genruntimeconfig.cache
 C:\КПІ\Ворк\Vlad\SystemActivityMonitorPrj\systemactivitymonitor\SystemActivityMonitor.UI\obj\Debug\net8.0-windows\ref\SystemActivityMonitor.UI.dll
+C:\КПІ\Ворк\Vlad\SystemActivityMonitorPrj\systemactivitymonitor\SystemActivityMonitor.UI\obj\Debug\net8.0-windows\AppWindow.baml
+C:\КПІ\Ворк\Vlad\SystemActivityMonitorPrj\systemactivitymonitor\SystemActivityMonitor.UI\obj\Debug\net8.0-windows\DesktopWindow.baml
+C:\КПІ\Ворк\Vlad\SystemActivityMonitorPrj\systemactivitymonitor\SystemActivityMonitor.UI\obj\Debug\net8.0-windows\AppWindow.g.cs
+C:\КПІ\Ворк\Vlad\SystemActivityMonitorPrj\systemactivitymonitor\SystemActivityMonitor.UI\obj\Debug\net8.0-windows\DesktopWindow.g.cs

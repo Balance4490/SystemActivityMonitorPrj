@@ -6,10 +6,10 @@ namespace SystemActivityMonitor.Data.Patterns.Command
     {
         private SystemController _controller;
         private string _name;
-        private int _cpu;
-        private int _ram;
+        private float _cpu;
+        private float _ram;
 
-        public StartProcessCommand(SystemController controller, string name, int cpu, int ram)
+        public StartProcessCommand(SystemController controller, string name, float cpu, float ram)
         {
             _controller = controller;
             _name = name;
@@ -19,7 +19,7 @@ namespace SystemActivityMonitor.Data.Patterns.Command
 
         public void Execute()
         {
-            _controller.StartProcess(_name, _cpu, _ram);
+            _controller.StartProcess(_name, (int)_cpu, (int)_ram);
         }
     }
 }

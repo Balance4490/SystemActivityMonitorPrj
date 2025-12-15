@@ -1,8 +1,9 @@
-using System.Linq;
 using System;
+using System.Linq;
 using System.Windows;
 using SystemActivityMonitor.Data;
 using SystemActivityMonitor.Data.Entities;
+using SystemActivityMonitor.Data.Patterns.Command;
 
 namespace SystemActivityMonitor.UI
 {
@@ -47,8 +48,17 @@ namespace SystemActivityMonitor.UI
                     db.Sessions.Add(newSession);
                     db.SaveChanges();
 
-                    MainWindow main = new MainWindow(user.Username, user.Role);
-                    main.Show();
+                    if (user.Role == "Admin")
+                    {
+                        var controller = new SystemController();
+                        MainWindow main = new MainWindow(controller, user.Username, user.Role);
+                        main.Show();
+                    }
+                    else
+                    {
+                        DesktopWindow desktop = new DesktopWindow(user.Username, user.Role);
+                        desktop.Show();
+                    }
 
                     this.Close();
                 }

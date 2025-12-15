@@ -12,7 +12,7 @@ namespace SystemActivityMonitor.UI
 {
     public partial class MainWindow : Window, IObserver
     {
-        private SystemController _controller = new SystemController();
+        private SystemController _controller;
         private CommandInvoker _invoker = new CommandInvoker();
         private DispatcherTimer _timer;
 
@@ -20,6 +20,34 @@ namespace SystemActivityMonitor.UI
         {
             InitializeComponent();
             this.Title = $"System Activity Monitor | Logged in as: {username} ({role})";
+
+            _controller = new SystemController();
+
+            if (role == "Admin")
+            {
+                AdminPanel.Visibility = Visibility.Visible;
+                UserPanel.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                UserPanel.Visibility = Visibility.Visible;
+                AdminPanel.Visibility = Visibility.Collapsed;
+            }
+
+            _controller.Attach(this);
+
+            _timer = new DispatcherTimer();
+            _timer.Interval = TimeSpan.FromSeconds(1);
+            _timer.Tick += (s, e) => _controller.UpdateSystemState();
+            _timer.Start();
+        }
+
+        public MainWindow(SystemController controller, string username, string role)
+        {
+            InitializeComponent();
+            this.Title = $"System Monitor | {username} ({role})";
+
+            _controller = controller;
 
             if (role == "Admin")
             {
@@ -60,46 +88,6 @@ namespace SystemActivityMonitor.UI
                 lblStatus.Text = "CRITICAL LOAD!";
             else
                 lblStatus.Text = "Normal operation";
-        }
-
-        private void BtnStartChrome_Click(object sender, RoutedEventArgs e)
-        {
-            var cmd = new StartProcessCommand(_controller, "Google Chrome", 5, 200);
-            _invoker.SetCommand(cmd);
-            _invoker.Run();
-        }
-
-        private void BtnStartVS_Click(object sender, RoutedEventArgs e)
-        {
-            var cmd = new StartProcessCommand(_controller, "Visual Studio", 30, 1500);
-            _invoker.SetCommand(cmd);
-            _invoker.Run();
-        }
-
-        private void BtnKillProcess_Click(object sender, RoutedEventArgs e)
-        {
-            dynamic selected = lstProcesses.SelectedItem;
-            if (selected == null)
-            {
-                MessageBox.Show("Виберіть процес зі списку!");
-                return;
-            }
-
-            var cmd = new KillProcessCommand(_controller, selected.Id);
-            _invoker.SetCommand(cmd);
-
-            try
-            {
-                _invoker.Run();
-            }
-            catch (InvalidOperationException ex)
-            {
-                MessageBox.Show(ex.Message, "Системна помилка", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Не вдалося завершити процес: " + ex.Message);
-            }
         }
 
         private void BtnFreezeProcess_Click(object sender, RoutedEventArgs e)
