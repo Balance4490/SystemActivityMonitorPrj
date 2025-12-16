@@ -92,6 +92,25 @@ namespace SystemActivityMonitor.Data.Patterns.Command
             Notify();
         }
 
+        public void IncreaseProcessLoad(Guid id)
+        {
+            var proc = _activeProcesses.FirstOrDefault(p => p.Id == id);
+            if (proc != null)
+            {
+                proc.IncreaseLoad();
+                RecalculateLoad();
+                Notify();
+            }
+        }
+
+        public void DecreaseProcessLoad(Guid id)
+        {
+            var proc = _activeProcesses.FirstOrDefault(p => p.Id == id);
+            proc?.DecreaseLoad();
+            RecalculateLoad();
+            Notify();
+        }
+
         private void RecalculateLoad()
         {
             float cpuSum = 0;

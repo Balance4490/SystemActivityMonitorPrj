@@ -35,7 +35,7 @@
                     <GridViewColumn Header="Дії" Width="100">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Content="❌ Kill"
+                                <Button Content="❌ Вимкнути"
                                         Click="BtnKillRow_Click"
                                         Tag="{Binding Id}"
                                         Background="#FFEFEFEF"

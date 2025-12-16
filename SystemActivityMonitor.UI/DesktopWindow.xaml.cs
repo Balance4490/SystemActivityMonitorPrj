@@ -51,7 +51,7 @@ namespace SystemActivityMonitor.UI
 
         private void LaunchApp(string name, float cpu, float ram)
         {
-            var cmd = new StartProcessCommand(_controller, name, cpu, ram);
+            var cmd = new StartProcessCommand(_controller, name, (int)cpu, (int)ram);
             _invoker.SetCommand(cmd);
             _invoker.Run();
 
@@ -66,6 +66,16 @@ namespace SystemActivityMonitor.UI
                     var killCmd = new KillProcessCommand(_controller, id);
                     _invoker.SetCommand(killCmd);
                     _invoker.Run();
+                };
+
+                appWindow.TabAdded += (id) =>
+                {
+                    _controller.IncreaseProcessLoad(id);
+                };
+
+                appWindow.TabClosed += (id) =>
+                {
+                    _controller.DecreaseProcessLoad(id);
                 };
 
                 appWindow.Show();

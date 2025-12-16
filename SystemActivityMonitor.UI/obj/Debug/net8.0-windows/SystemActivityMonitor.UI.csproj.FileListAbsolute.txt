@@ -270,3 +270,5 @@ C:\КПІ\Ворк\Vlad\SystemActivityMonitorPrj\systemactivitymonitor\SystemAct
 C:\КПІ\Ворк\Vlad\SystemActivityMonitorPrj\systemactivitymonitor\SystemActivityMonitor.UI\obj\Debug\net8.0-windows\DesktopWindow.baml
 C:\КПІ\Ворк\Vlad\SystemActivityMonitorPrj\systemactivitymonitor\SystemActivityMonitor.UI\obj\Debug\net8.0-windows\AppWindow.g.cs
 C:\КПІ\Ворк\Vlad\SystemActivityMonitorPrj\systemactivitymonitor\SystemActivityMonitor.UI\obj\Debug\net8.0-windows\DesktopWindow.g.cs
+C:\КПІ\Ворк\Vlad\SystemActivityMonitorPrj\systemactivitymonitor\SystemActivityMonitor.UI\bin\Debug\net8.0-windows\Images\vs_screenshot.png
+C:\КПІ\Ворк\Vlad\SystemActivityMonitorPrj\systemactivitymonitor\SystemActivityMonitor.UI\bin\Debug\net8.0-windows\Images\google_home.png
